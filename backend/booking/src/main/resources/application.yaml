@@ -9,4 +9,8 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
+jwt:
+  access_token:
+    lifetime: 15m
+  secret: 191685e4abb46752988db6d8ee73b8f3950fc988b3f566193b15fb09d397b2b3cc30d85e45a7c7e3635f7ee109d64429db5f639b10c22094f8e9d57cc992bc4f

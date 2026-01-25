@@ -21,7 +21,6 @@ public class User {
     @Column(nullable = false)
     private String fullName;
 
-    @OneToMany
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToMany(mappedBy = "user")
     private List<Booking> bookings;
 }
