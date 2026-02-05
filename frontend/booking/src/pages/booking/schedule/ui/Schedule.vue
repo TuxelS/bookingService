@@ -2,18 +2,40 @@
     <div class="schedule-container">
         <div class="grid-header">
             <div class="header-time-col"></div>
-            <div class="col-day" v-for="dayDate in daysInWeek" :key="dayDate[0]">
+            <div class="col-day" 
+                v-for="dayDate in daysInWeek" 
+                :key="dayDate[0]"
+                :class="{
+                    'today': isToday(dayDate[1])
+                }"
+            >
                 <span class="day-name">{{ dayDate[0]}}</span>
                 <span class="day-date">{{ dayDate[1].getDate()}}</span>
             </div>
         </div>
         <div class="grid-body">
             <div class="time-axis">
+                <div class="current-time-line"
+                    v-if="getCountPxForLine!==null"
+                    :style="{ top: `${getCountPxForLine}px` }"
+                >
+                </div>
                 <div class="time-slot" v-for="hour in HOURS_ARRAY" :key="hour">
                     {{ hour }}
                 </div>
             </div>
-            <div class="col-day" v-for="dayDate in daysInWeek" :key="dayDate[0]">
+            <div class="col-day" 
+                v-for="dayDate in daysInWeek" 
+                :key="dayDate[0]"
+                :class="{
+                    'today': isToday(dayDate[1])
+                }"
+            >
+                <div 
+                    class="current-time-line"
+                    v-if="isToday(dayDate[1]) && getCountPxForLine!==null"
+                    :style="{ top: `${getCountPxForLine}px` }"
+                ></div>
                 <div class="time-cell-table" v-for="hour in HOURS_ARRAY" :key="hour">
                     <TimeSlot 
                         :start-hour="hour"
@@ -27,6 +49,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { HOURS_ARRAY } from '../../config/constants';
 import TimeSlot from '../../ui/TimeSlot.vue';
 import { bookingsForWeek, type BookingDTO } from '../api/bookings';
@@ -35,16 +58,52 @@ const props = defineProps<{
     daysInWeek: Map<string, Date>
 }>()
 
-const getBookingForWeek = async (startDate: Date): Promise<BookingDTO[] | null> => {
-    const start: string = startDate.toISOString().split('T')[0]!
-    const bookings = await bookingsForWeek(start)
-    console.log(bookings)
-    return bookings
+const bookingsData = ref<BookingDTO[]>([])
+const currentTime = ref<Date>(new Date())
+
+const getFirstDay = () => props.daysInWeek.values().next().value!
+
+watch(getFirstDay, async (firstDate) => {
+    if (!firstDate) {
+        bookingsData.value = []
+        return
+    }
+    
+    const start = firstDate.toISOString().split('T')[0]!
+    bookingsData.value = await bookingsForWeek(start) || []
+    console.log(bookingsData)
+}, { immediate: true }
+)
+
+const isToday = (day: Date):boolean => {
+    const today = new Date()
+    return today.getDate() === day.getDate()
 }
 
+// 15 слотов, 1 слот - 64px(4 rem)
+const getCountPxForLine = computed<number | null>(() => {
+    const hours = currentTime.value.getHours()
+    if (hours >= 7 && hours <= 21) {
+        const minutesFrom7am: number = currentTime.value.getMinutes() - 7 * 60
+        const minutesInHour = 60
+        const pixelsInHourSlot = 64
+        const countPx: number = minutesFrom7am * (minutesInHour/pixelsInHourSlot)
+        return countPx
+    }
+    return null
+})
 
-getBookingForWeek(props.daysInWeek.values().next().value!)
+let timerId: number
 
+onMounted(() => {
+    timerId = setInterval(() => {
+        currentTime.value = new Date()
+    }, 60000)
+})
+
+onUnmounted(() => {
+    if (timerId) clearInterval(timerId)
+})
 
 </script>
 
@@ -83,6 +142,20 @@ getBookingForWeek(props.daysInWeek.values().next().value!)
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.current-time-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0; 
+  height: 2px;
+  background-color: #ff3b30;
+}
+
+.col-day.today {
+    background-color: rgb(217, 235, 252);
 }
 
 .grid-body {
@@ -94,8 +167,8 @@ getBookingForWeek(props.daysInWeek.values().next().value!)
 
 .time-axis {
     grid-column: 1;
-    height: 100%;
     border-right: 1px solid #e0dfdf;
+    position: relative;
 }
 
 .time-slot {

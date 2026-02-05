@@ -14,7 +14,9 @@
             @prev-week="getPrevWeek"
             @today="setCurrentWeek"
         />
-        <Schedule :days-in-week="daysInWeek"/>
+        <Schedule 
+            :days-in-week="daysInWeek"
+        />
     </div>
 </template>
 
@@ -22,7 +24,7 @@
 import BookingHeader from './BookingHeader.vue';
 import ControlBar from './ControlBar.vue';
 import Schedule from '../schedule/ui';
-import {computed, ref} from 'vue'
+import {computed, ref, watch} from 'vue'
 
 
 enum WeekDaysRu {
@@ -47,6 +49,7 @@ const daysInWeek = ref(new Map<string, Date>([
 
 const getFirstDayInWeek = computed(() => daysInWeek.value.get(WeekDaysRu.Monday))
 const getLastDayInWeek = computed(() => daysInWeek.value.get(WeekDaysRu.Sunday))
+
 
 const setCurrentWeek = () => {
     const newMap = new Map<string, Date>()
