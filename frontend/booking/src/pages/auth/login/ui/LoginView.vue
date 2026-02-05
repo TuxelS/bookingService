@@ -33,7 +33,6 @@
             <button type="submit">Войти</button>
             </form>
          </div>
-         {{ form }}
       </div>
    </div>
  </template>
@@ -41,7 +40,7 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue'
 import {login} from '../api'
-import { MAIN_LINK } from '@/shared/config'
+import { BOOKING_LINK } from '@/shared/config'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/entities/user'
 import { http } from '@/shared/api'
@@ -76,9 +75,9 @@ const loginHandler = async (): Promise<void> => {
       email: form.value.email!,
       token: response.token
    })
-   http.setToken(response.token)
+   
 
-   router.push(MAIN_LINK)
+   router.push(BOOKING_LINK)
 }
 
 const isFormValid = (): boolean => {
@@ -121,7 +120,7 @@ const isFormValid = (): boolean => {
   font-weight: bold;
   color: white;
   background-color: #5c5cf5;
-  border-radius: 12px;
+  border-radius: 5px;
   margin: 0 auto 1rem auto;  
 }
 .title {

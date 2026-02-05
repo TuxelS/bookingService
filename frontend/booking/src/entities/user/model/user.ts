@@ -10,7 +10,7 @@ interface User {
 
 interface UserStore {
     isUserAuth: Ref<boolean>
-    setUser: (userData: User) => void
+    setUser: (userData: User | null) => void
     getUserEmail: () => string
     getUserToken: () => string
 }
@@ -27,6 +27,7 @@ export const useUserStore = defineStore('useUserStore', (): UserStore => {
         }
     })
     const isUserAuth: UserStore['isUserAuth'] = computed(() => !!user.value)
+    //const isUserAuth: UserStore['isUserAuth'] = computed(() => true)
     const setUser: UserStore['setUser'] = (userData) => {
         user.value = userData
     }

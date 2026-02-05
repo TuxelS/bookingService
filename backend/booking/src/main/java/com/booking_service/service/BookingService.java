@@ -2,6 +2,7 @@ package com.booking_service.service;
 
 import com.booking_service.entity.Booking;
 import com.booking_service.entity.User;
+import com.booking_service.model.BookingDTO;
 import com.booking_service.model.CreateBookingRequestDTO;
 import com.booking_service.repository.BookingRepository;
 import com.booking_service.repository.UserRepository;
@@ -21,8 +22,8 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
 
-    public List<Booking> getBookingListForWeek(LocalDate startDate) {
-        LocalDate endDate = startDate.plusWeeks(1);
+    public List<BookingDTO> getBookingListForWeek(LocalDate startDate) {
+        LocalDate endDate = startDate.plusDays(6);
         return bookingRepository.findByDateBetween(startDate, endDate);
     }
 

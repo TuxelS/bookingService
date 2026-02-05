@@ -1,4 +1,5 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
+import { useUserStore } from "@/entities/user";
+import axios, { type AxiosRequestConfig } from "axios";
 
 interface HttpConfig {
     baseURL: string
@@ -13,12 +14,9 @@ interface HttpResponse<T> {
 interface HttpClient {
     fetchData: <T>(config: AxiosRequestConfig) => Promise<T | null>
     isSuccess: (config: AxiosRequestConfig) => Promise<boolean>
-    setToken: (token: string) => void
-    clearToken: () => void
     fetchFull: <T>(config: AxiosRequestConfig) => Promise<HttpResponse<T>>
 }
 
-let bearerToken: string | null = null
 
 const httpClient = ({baseURL, defaultHeaders}: HttpConfig ): HttpClient => {
     const DATA_NULL = null
@@ -29,6 +27,9 @@ const httpClient = ({baseURL, defaultHeaders}: HttpConfig ): HttpClient => {
     })
 
     const request = async <T> (config: AxiosRequestConfig): Promise<HttpResponse<T>> => {
+        const userStore = useUserStore()
+        const bearerToken = userStore.isUserAuth ? userStore.getUserToken() : null
+        
         const headers = {...config.headers} as NonNullable<typeof config.headers>
         if (bearerToken !== null) headers['Authorization'] = `Bearer ${bearerToken}`
         try {
@@ -39,9 +40,13 @@ const httpClient = ({baseURL, defaultHeaders}: HttpConfig ): HttpClient => {
             return {data, status}
         } catch (err: unknown) {
             if (axios.isAxiosError(err) && err.response) {
+                const status = err.response.status ?? ERROR_STATUS
+                if (status === 401) {
+                    userStore.setUser(null)
+                }
                 return {
                     data: err.response.data ?? DATA_NULL,
-                    status: err.response.status ?? ERROR_STATUS
+                    status
                 }
             }
             return {data: DATA_NULL, status: ERROR_STATUS}
@@ -58,22 +63,15 @@ const httpClient = ({baseURL, defaultHeaders}: HttpConfig ): HttpClient => {
         return status >= 200 && status < 300
     }
 
-    const setToken = (token: string): void => {
-        bearerToken = token
-    }
 
     const fetchFull = async <T>(config: AxiosRequestConfig): Promise<HttpResponse<T>> =>
         request<T>(config)
 
-    const clearToken = (): void => {
-        bearerToken = null
-    }
+
 
     return {
         fetchData,
         isSuccess,
-        setToken,
-        clearToken,
         fetchFull
     }
 }

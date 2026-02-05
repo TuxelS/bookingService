@@ -1,6 +1,7 @@
 package com.booking_service.controller;
 
 import com.booking_service.entity.Booking;
+import com.booking_service.model.BookingDTO;
 import com.booking_service.model.CreateBookingRequestDTO;
 import com.booking_service.service.BookingService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping("/week")
-    public List<Booking> bookingListForWeek(@RequestParam(name = "startDate", required = true) LocalDate startDate) {
+    public List<BookingDTO> bookingListForWeek(@RequestParam(name = "startDate", required = true) LocalDate startDate) {
         return bookingService.getBookingListForWeek(startDate);
     }
 

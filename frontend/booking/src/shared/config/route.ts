@@ -1,7 +1,7 @@
 import type { RouteLocationRaw } from 'vue-router'
 
-const MAIN_ROUTE_NAME = 'main'
+const BOOKING_ROUTE_NAME = 'booking'
 
-export const MAIN_LINK = {
-  name: MAIN_ROUTE_NAME
+export const BOOKING_LINK = {
+  name: BOOKING_ROUTE_NAME
 } as const satisfies RouteLocationRaw

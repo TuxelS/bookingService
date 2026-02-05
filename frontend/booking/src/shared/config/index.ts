@@ -1,3 +1,3 @@
-import { MAIN_LINK } from './route'
+import { BOOKING_LINK } from './route'
 
-export { MAIN_LINK }
+export { BOOKING_LINK }

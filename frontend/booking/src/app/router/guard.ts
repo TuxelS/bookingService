@@ -1,6 +1,6 @@
 import { useUserStore } from '@/entities/user'
 import { AUTH_SECTION_ROUTE } from '@/pages/auth'
-import { MAIN_LINK } from '@/shared/config'
+import { BOOKING_LINK } from '@/shared/config'
 import type { Router } from 'vue-router'
 
 export const setupRouterGuard = (router: Router): void => {
@@ -9,7 +9,7 @@ export const setupRouterGuard = (router: Router): void => {
 
         if(isUserAuth) {
             if (to.path.startsWith(AUTH_SECTION_ROUTE.path)) {
-                return next({ name: MAIN_LINK.name})
+                return next({ name: BOOKING_LINK.name})
             }
 
             return next()
