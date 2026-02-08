@@ -21,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import BookingHeader from './BookingHeader.vue';
-import ControlBar from './ControlBar.vue';
+import BookingHeader from '../header/ui/BookingHeader.vue';
+import ControlBar from '../control-bar/ControlBar.vue';
 import Schedule from '../schedule/ui';
 import {computed, ref, watch} from 'vue'
 
@@ -51,15 +51,20 @@ const getFirstDayInWeek = computed(() => daysInWeek.value.get(WeekDaysRu.Monday)
 const getLastDayInWeek = computed(() => daysInWeek.value.get(WeekDaysRu.Sunday))
 
 
+
 const setCurrentWeek = () => {
     const newMap = new Map<string, Date>()
     const currentDate = new Date()
-    // Получаем первый день текущей недели
-    currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1)
+    
+    const dayOfWeek = currentDate.getDay()
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+    currentDate.setDate(currentDate.getDate() - daysToMonday)
+    
     daysInWeek.value.forEach((date, day) => {
         newMap.set(day, new Date(currentDate))
         currentDate.setDate(currentDate.getDate() + 1)
     })
+    
     daysInWeek.value = newMap
 }
 

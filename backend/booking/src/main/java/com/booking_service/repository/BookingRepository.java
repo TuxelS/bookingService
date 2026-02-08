@@ -15,6 +15,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("""
             SELECT new com.booking_service.model.BookingDTO(
+                b.id,
                 b.title,
                 b.date,
                 b.startTime,

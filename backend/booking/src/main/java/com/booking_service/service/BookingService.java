@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,8 +43,8 @@ public class BookingService {
                 .user(creator)
                 .title(requestDTO.getTitle())
                 .date(requestDTO.getDate())
-                .startTime(requestDTO.getStartTime())
-                .endTime(requestDTO.getEndTime())
+                .startTime(String.valueOf(requestDTO.getStartTime()))
+                .endTime(String.valueOf(requestDTO.getEndTime()))
                 .build();
 
         for (Booking existingBooking : bookingListOfDay) {
@@ -61,11 +62,15 @@ public class BookingService {
         return endTime.isAfter(startTime);
     }
 
+    private LocalTime fromStrToLocalTime(String time) {
+        return LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
+    }
+
     private boolean hasAvailableTime(Booking existingBooking, Booking newBooking) {
-        LocalTime existingStartTime = existingBooking.getStartTime();
-        LocalTime existingEndTime = existingBooking.getEndTime();
-        LocalTime newStartTime = newBooking.getStartTime();
-        LocalTime newEndTime = newBooking.getEndTime();
+        LocalTime existingStartTime = fromStrToLocalTime(existingBooking.getStartTime());
+        LocalTime existingEndTime = fromStrToLocalTime(existingBooking.getEndTime());
+        LocalTime newStartTime = fromStrToLocalTime(newBooking.getStartTime());
+        LocalTime newEndTime = fromStrToLocalTime(newBooking.getEndTime());
 
         boolean availableBeforeExistingTimeSlot = newStartTime.isBefore(existingStartTime)
                 && (newEndTime.isBefore(existingStartTime) || newEndTime.equals(existingStartTime));

@@ -8,6 +8,10 @@ import { setupRouterGuard } from './guard'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/',
+      redirect: '/booking'
+    },
     AUTH_SECTION_ROUTE,
     {
       ...AUTH_SECTION_ROUTE,

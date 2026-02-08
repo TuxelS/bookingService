@@ -1,6 +1,7 @@
 import { http } from "@/shared/api"
 
 export interface BookingDTO {
+  id: number
   title: string
   date: string
   startTime: string
